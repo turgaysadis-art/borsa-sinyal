@@ -8,17 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'
+          flutter-version: '3.22.0'  # 3.19 yerine 3.22 (daha stabil)
           channel: 'stable'
+          cache: true
+
+      - name: Verify flutter_app exists
+        run: ls -la flutter_app/pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --verbose
         working-directory: ./flutter_app
 
       - name: Generate code
@@ -26,7 +31,7 @@ jobs:
         working-directory: ./flutter_app
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --verbose
         working-directory: ./flutter_app
 
       - name: Upload APK
