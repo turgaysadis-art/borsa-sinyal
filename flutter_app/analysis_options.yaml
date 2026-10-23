@@ -1,0 +1,49 @@
+# ==========================================
+# BORSA SİNYAL FLUTTER - BUILD CONFIGURATION
+# ==========================================
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Style
+    always_use_package_imports: true
+    avoid_relative_lib_imports: true
+    prefer_relative_imports: true
+    sort_pub_dependencies: true
+    
+    # Performance
+    avoid_unnecessary_containers: true
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_locals: true
+    prefer_final_fields: true
+    
+    # Safety
+    avoid_print: false  # Allow for debugging
+    avoid_web_libraries_in_flutter: true
+    no_leading_underscores_for_local_identifiers: true
+    prefer_single_quotes: true
+    
+    # Riverpod
+    riverpod_lint_rules:
+      - deprecated_provider_elements
+      - deprecated_provider_methods
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  plugins:
+    - custom_lint
+  errors:
+    invalid_annotation_target: ignore
+    unused_field: warning
+    unused_local_variable: warning
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+formatter:
+  trailing_commas: preserve
+  page_width: 100

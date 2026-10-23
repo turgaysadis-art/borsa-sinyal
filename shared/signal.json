@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Borsa Sinyal Shared Types",
+  "type": "object",
+  "definitions": {
+    "NewsSource": {
+      "type": "object",
+      "required": ["id", "name", "type", "url", "enabled", "weight"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["rss", "youtube", "kap", "custom"] },
+        "url": { "type": "string", "format": "uri" },
+        "enabled": { "type": "boolean" },
+        "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "config": {
+          "type": "object",
+          "properties": {
+            "channel_id": { "type": "string" },
+            "api_key": { "type": "string" },
+            "selectors": { "type": "object" },
+            "headers": { "type": "object" }
+          }
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "last_fetched_at": { "type": ["string", "null"], "format": "date-time" },
+        "last_error": { "type": ["string", "null"] }
+      }
+    },
+    "NewsItem": {
+      "type": "object",
+      "required": ["id", "source_id", "title", "url", "published_at", "fetched_at"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "source_id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": ["string", "null"] },
+        "content": { "type": ["string", "null"] },
+        "url": { "type": "string", "format": "uri" },
+        "author": { "type": ["string", "null"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "published_at": { "type": "string", "format": "date-time" },
+        "fetched_at": { "type": "string", "format": "date-time" },
+        "processed_at": { "type": ["string", "null"], "format": "date-time" },
+        "sentiment_score": { "type": ["number", "null"], "minimum": -1, "maximum": 1 },
+        "relevant_tickers": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Signal": {
+      "type": "object",
+      "required": ["id", "date", "direction", "confidence", "components"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "date": { "type": "string", "format": "date" },
+        "direction": { "type": "string", "enum": ["UP", "DOWN", "FLAT"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "components": {
+          "type": "object",
+          "properties": {
+            "news_count": { "type": "integer" },
+            "positive_ratio": { "type": "number" },
+            "negative_ratio": { "type": "number" },
+            "weighted_sentiment": { "type": "number" },
+            "top_positive_keywords": { "type": "array", "items": { "type": "string" } },
+            "top_negative_keywords": { "type": "array", "items": { "type": "string" } },
+            "source_breakdown": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "count": { "type": "integer" },
+                  "avg_sentiment": { "type": "number" },
+                  "weight": { "type": "number" }
+                }
+              }
+            },
+            "fusion_components": { "type": "object" },
+            "fusion_weights": { "type": "object" },
+            "explanation": { "type": "string" },
+            "key_drivers": { "type": "array", "items": { "type": "string" } },
+            "risk_factors": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "model_version": { "type": "string" }
+      }
+    },
+    "TechnicalSnapshot": {
+      "type": "object",
+      "properties": {
+        "symbol": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "close": { "type": "number" },
+        "change": { "type": "number" },
+        "change_pct": { "type": "number" },
+        "sparkline_data": { "type": "array", "items": { "type": "number" } },
+        "ema_5": { "type": "number" },
+        "ema_21": { "type": "number" },
+        "ema_50": { "type": "number" },
+        "ema_200": { "type": "number" },
+        "dist_ema5_pct": { "type": "number" },
+        "dist_ema21_pct": { "type": "number" },
+        "dist_ema50_pct": { "type": "number" },
+        "dist_ema200_pct": { "type": "number" },
+        "trend_short": { "type": "string", "enum": ["UP", "DOWN", "FLAT"] },
+        "trend_medium": { "type": "string", "enum": ["UP", "DOWN", "FLAT"] },
+        "trend_long": { "type": "string", "enum": ["UP", "DOWN", "FLAT"] },
+        "rsi_14": { "type": "number" },
+        "macd": { "type": "number" },
+        "macd_signal": { "type": "number" },
+        "macd_histogram": { "type": "number" },
+        "volume": { "type": "integer" },
+        "volume_avg_20": { "type": "integer" },
+        "volume_ratio": { "type": "number" },
+        "resistance_20": { "type": "number" },
+        "support_20": { "type": "number" },
+        "technical_score": { "type": "number" },
+        "summary": { "type": "string" }
+      }
+    },
+    "MarketSummary": {
+      "type": "object",
+      "required": ["timestamp", "indices", "sectors", "top_gainers", "top_losers", "most_active", "neutral", "advancing", "declining", "unchanged", "total_volume", "market_breadth", "total_stocks"],
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "indices": { "type": "object" },
+        "sectors": { "type": "object" },
+        "top_gainers": { "type": "array", "items": { "$ref": "#/definitions/StockSnapshot" } },
+        "top_losers": { "type": "array", "items": { "$ref": "#/definitions/StockSnapshot" } },
+        "most_active": { "type": "array", "items": { "$ref": "#/definitions/StockSnapshot" } },
+        "neutral": { "type": "array", "items": { "$ref": "#/definitions/StockSnapshot" } },
+        "advancing": { "type": "integer" },
+        "declining": { "type": "integer" },
+        "unchanged": { "type": "integer" },
+        "total_volume": { "type": "integer" },
+        "market_breadth": { "type": "number" },
+        "total_stocks": { "type": "integer" }
+      }
+    },
+    "StockSnapshot": {
+      "type": "object",
+      "required": ["symbol", "name", "price", "change", "change_pct", "volume", "volume_avg", "sector"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "change": { "type": "number" },
+        "change_pct": { "type": "number" },
+        "volume": { "type": "integer" },
+        "volume_avg": { "type": "integer" },
+        "sector": { "type": "string" },
+        "market_cap": { "type": ["number", "null"] }
+      }
+    },
+    "AppSettings": {
+      "type": "object",
+      "properties": {
+        "theme": { "type": "string", "enum": ["light", "dark", "custom", "system"] },
+        "custom_theme": {
+          "type": "object",
+          "properties": {
+            "seed_color": { "type": "string" },
+            "background_light": { "type": "string" },
+            "background_dark": { "type": "string" },
+            "surface_light": { "type": "string" },
+            "surface_dark": { "type": "string" }
+          }
+        },
+        "refresh_interval_minutes": { "type": "integer", "minimum": 5, "maximum": 1440 },
+        "auto_refresh_enabled": { "type": "boolean" },
+        "notification_enabled": { "type": "boolean" },
+        "signal_threshold": { "type": "number", "minimum": 0.5, "maximum": 1 },
+        "enabled_sources": { "type": "array", "items": { "type": "string" } },
+        "language": { "type": "string", "enum": ["tr", "en"] }
+      }
+    },
+    "ExportData": {
+      "type": "object",
+      "required": ["version", "exported_at", "sources", "signals", "settings"],
+      "properties": {
+        "version": { "type": "string" },
+        "exported_at": { "type": "string", "format": "date-time" },
+        "sources": { "type": "array", "items": { "$ref": "#/definitions/NewsSource" } },
+        "signals": { "type": "array", "items": { "$ref": "#/definitions/Signal" } },
+        "settings": { "$ref": "#/definitions/AppSettings" }
+      }
+    }
+  }
+}
